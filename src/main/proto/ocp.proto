@@ -1,0 +1,170 @@
+syntax="proto3";
+
+package OrionCommunication;
+
+service OrionCommunicationService {
+    rpc SetPanaromaParameters(PanoramaPars) returns(AppCommandResult) {}
+    rpc GetPanaromaParameters(DummyInfo) returns(PanoramaPars) {}
+
+    rpc SetMotionDetectionParameters(TRoi) returns(AppCommandResult) {}
+    rpc GetMotionDetectionParameters(DummyInfo) returns(TRoi) {}
+
+    rpc SetCurrentMode(ModeQ) returns(AppCommandResult) {
+        option deprecated = true;
+    }
+    rpc GetCurrentMode(DummyInfo) returns(ModeQ) {
+        option deprecated = true;
+    }
+    rpc sendAlarm(DummyInfo) returns(stream AlarmInfo) {}
+
+    rpc SetSensivityParameter(SetSensivity) returns(AppCommandResult) {}
+    rpc GetSensivityParameter(DummyInfo) returns(SetSensivity) {}
+    rpc GetLastPanaromaFrame(DummyInfo) returns(AppCommandResult) {}
+    rpc GetPanaromaFrames(FrameModeQ) returns(stream PanoramaFrame) {}
+
+    rpc RunMotion(DummyInfo) returns(AppCommandResult) {}
+    rpc RunPanaroma(DummyInfo) returns(AppCommandResult) {}
+    rpc StopMotion(DummyInfo) returns(AppCommandResult) {}
+    rpc StopPanaroma(DummyInfo) returns(AppCommandResult) {}
+
+    rpc RunCalibration(DummyInfo) returns(AppCommandResult) {}
+    rpc StopCalibration(DummyInfo) returns(AppCommandResult) {}
+
+    rpc GetMainScreenShot(DummyInfo) returns(ScreenFrame) {}
+    rpc GetSecScreenShot(DummyInfo) returns(ScreenFrame) {}
+    rpc GotoPanaromaPixel(TPoint) returns(AppCommandResult) {}
+    rpc CurrentPanaromaPixel(DummyInfo) returns(TPoint) {}
+
+    rpc RunAutoTrack(AutoTrackQ) returns(AppCommandResult) {}
+    rpc StopAutoTrack(DummyInfo) returns(AppCommandResult) {}
+
+    rpc SetVideoOverlay(OverlayQ) returns(AppCommandResult) {}
+}
+
+message AlarmInfo {
+    bytes AlarmData = 1;
+}
+
+message PanoramaPars {
+    int32 pos = 1;
+    int32 fov = 2;
+    float update_rate = 3;
+    float pan_start_angle = 4;
+    int32 y_start_pos = 5;
+    int32 widthx = 6;
+    int32 heighty = 7;
+    int32 fix_mode = 8;
+    int32 pan_motion_frame_no = 9;
+}
+
+message TRoi {
+    repeated TPolygon polygon = 1;
+    TRectangle rect1 = 2;
+    TRectangle rect2 = 3;
+}
+
+message TPoint{
+    float x = 1;
+    float y = 2;
+}
+
+message TPolygon {
+    repeated TPoint points = 1;
+    bool is_active = 2;
+}
+
+message TRectangle {
+    TPoint upperLeft = 1;
+    TPoint bottomRight = 2;
+}
+
+message ModeQ {
+    enum Mode {
+      NONE = 0;
+      PANAROMA = 1;
+      MOTION_DETECTION = 2;
+    }
+    Mode mode = 1;
+}
+
+message DummyInfo {
+    int32 dummy = 1;
+}
+
+message MotionDetectionParameters {
+    int32 dummy = 1;
+}
+
+message AppCommandResult {
+    enum Response {
+        SUCCESSFUL = 0;
+        FAIL = 1;
+        MISSING = 2;
+    }
+    int32 err = 1;
+    Response response = 2;
+}
+
+message AryaParameters {
+    int32 panSpeed = 1;
+}
+
+message FrameModeQ {
+    enum FrameMode {
+      LastFrame = 0;
+      AllFrames = 1;
+    }
+    FrameMode mode = 1;
+}
+
+message PanoramaFrame {
+    bool valid = 1;
+    float progress = 2;
+    bytes frameData = 3;
+}
+message ScreenFrame {
+    bytes frame = 1;
+}
+
+message SetSensivity {
+    int32 sensivity = 1;
+}
+
+message OverlayQ {
+    enum Position {
+        UpperLeft = 0;
+        UpperRight = 1;
+        LowerLeft = 2;
+        LowerRight = 3;
+        Custom = 4;
+    }
+    int32 configNo = 1;
+    Position pos = 2;
+    int32 posx = 3;
+    int32 posy = 4;
+    string text = 5;
+    int32 display = 6;
+    int32 textSize = 7;
+    int32 dateTimeFormat = 8; // support two formats. YYYY/MM/DD HH:MM:SS or MM-DD-YY HH:MM:SS
+    int32 displayDate = 9;
+    int32 displayTime = 10;
+}
+
+message TrackObjectQ {
+    float point_x = 1;
+    float point_y = 2;
+    float width = 3;
+    float height = 4;
+}
+
+message AutoTrackQ {
+    enum Mode {
+    DistanceToCenter = 0;
+    SizeOfObject = 1;
+    UserMode = 2;
+    }
+    Mode mode = 1;
+    float trackScore = 2;
+    int32 trackInterval = 3;
+    TrackObjectQ object = 4;
+}

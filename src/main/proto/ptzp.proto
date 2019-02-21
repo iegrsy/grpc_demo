@@ -1,0 +1,140 @@
+syntax = "proto3";
+
+package ptzp;
+
+import "google/protobuf/empty.proto";
+
+service PTZService {
+    rpc GetPTZPosInfo (PtzCmdPar) returns (PTZPosInfo) {}
+    rpc PanLeft(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc PanRight(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc PanStop(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc PanTiltAbs(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc PanTilt2Pos(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc TiltUp(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc TiltDown(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc TiltStop(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc ZoomIn(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc ZoomOut(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc ZoomStop(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc PresetGo(PresetCmd) returns (PtzCommandResult) {}
+    rpc PresetSave(PresetCmd) returns (PtzCommandResult) {}
+    rpc PresetDelete(PresetCmd) returns (PtzCommandResult) {}
+    rpc PresetGetList(PresetCmd) returns (PresetList) {}
+    rpc PatrolSave(PatrolCmd) returns (PtzCommandResult) {}
+    rpc PatrolDelete(PatrolCmd) returns (PtzCommandResult) {}
+    rpc PatrolRun(PatrolCmd) returns (PtzCommandResult) {}
+    rpc PatrolStop(PatrolCmd) returns (PtzCommandResult) {}
+    rpc PatrolGetList(PatrolCmd) returns (PresetList) {}
+    rpc PatrolGetDetails(PatrolCmd) returns (PatrolDefinition) {}
+    rpc PatternRun(PatternCmd) returns (PtzCommandResult) {}
+    rpc PatternStop(PatternCmd) returns (PtzCommandResult) {}
+    rpc PatternStartRecording(PatternCmd) returns (PtzCommandResult) {}
+    rpc PatternStopRecording(PatternCmd) returns (PtzCommandResult) {}
+    rpc PatternDelete(PatternCmd) returns (PtzCommandResult) {}
+    rpc PatternGetList(PatternCmd) returns (PresetList) {}
+    rpc FocusIn(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc FocusOut(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc FocusStop(PtzCmdPar) returns (PtzCommandResult) {}
+    rpc GetSettings(Settings) returns (Settings) {}
+    rpc SetSettings(Settings) returns (Settings) {}
+    rpc GetHeads(google.protobuf.Empty) returns (PtzHeadInfo) {}
+
+    rpc GetIO(IOCmdPar) returns (IOCmdPar) {}
+    rpc SetIO(IOCmdPar) returns (IOCmdPar) {}
+}
+
+message IOState {
+    enum OutputValue {
+    LOW = 0;
+    HIGH = 1;
+    }
+    enum Direction {
+    INPUT = 0;
+    OUTPUT = 1;
+    }
+    OutputValue value = 1;
+    Direction direction = 2;
+}
+
+message IOCmdPar {
+    repeated string name = 1;
+    repeated IOState state = 2;
+}
+
+message PtzHeadInfo {
+    repeated PtzHead list = 1;
+}
+
+message PtzHead {
+    enum Capability {
+    PAN = 0;
+    TILT = 1;
+    ZOOM = 2;
+    ADVANCED = 3;
+    }
+    enum Status {
+    SYNCING = 0;
+    NORMAL = 1;
+    }
+    repeated Capability capabilities = 1;
+    Status status = 2;
+    int32 head_id = 3;
+    Settings head_settings = 4;
+}
+
+message PtzCmdPar {
+    float pan_speed = 1;
+    float tilt_speed = 2;
+    float zoom_speed = 3;
+    float pan_abs = 4;
+    float tilt_abs = 5;
+    int32 head_id = 6;
+}
+
+message PresetCmd{
+    int32 preset_id = 1;
+    string preset_name = 2;
+    int32 pt_id = 3;
+    int32 z_id = 4;
+}
+
+message PresetList{
+    string list = 1;
+}
+
+message PatrolCmd{
+    int32 patrol_id = 1;
+    string patrol_name = 2;
+    string preset_list = 3;
+    string interval_list = 4;
+}
+
+message PatternCmd{
+    int32 pattern_id = 1;
+    bytes pattern_name = 2;
+}
+
+message Settings{
+    int32 head_id = 1;
+    string json = 2;
+}
+
+message PtzCommandResult {
+    int32 err = 1;
+}
+
+message PTZInfoQ {
+    int32 dummy = 1;
+}
+
+message PTZPosInfo {
+    int32 pan_pos = 1;
+    int32 tilt_pos = 2;
+    int32 zoom_pos = 3;
+}
+
+message PatrolDefinition {
+    repeated string presets = 1;
+    repeated int32 intervals = 2;
+}
