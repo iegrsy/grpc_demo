@@ -1,2 +1,3 @@
+include ':AryaCommunicationLibrary'
 rootProject.name = 'grpc_demo'
 
